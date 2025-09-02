@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "视频小窗助手",
+  "version": "0.1.0",
+  "description": "检测网页视频并一键以小窗（画中画）播放。",
+  "action": {
+    "default_title": "小窗播放",
+    "default_popup": "popup/popup.html",
+    "default_icon": "assets/icons/logo.png"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "permissions": ["tabs", "scripting", "activeTab", "notifications"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/detect.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
