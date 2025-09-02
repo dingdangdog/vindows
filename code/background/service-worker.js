@@ -1,13 +1,15 @@
 const tabVideoState = new Map();
 
+// Pre-resolve icon URLs to absolute extension URLs to avoid fetch issues
+const ICON_COLOR_URL = chrome.runtime.getURL("assets/icons/logo.png");
+const ICON_GRAY_URL = chrome.runtime.getURL("assets/icons/logo_gray.png");
+
 function markNoVideo(tabId) {
   updateState(tabId, { hasVideo: false, count: 0 });
 }
 
 function setIconForTab(tabId, hasVideo, count) {
-  const path = hasVideo
-    ? "assets/icons/logo.png"
-    : "assets/icons/logo_gray.png";
+  const path = hasVideo ? ICON_COLOR_URL : ICON_GRAY_URL;
   chrome.action.setIcon({ tabId, path });
   if (hasVideo && count > 1) {
     chrome.action.setBadgeText({ tabId, text: String(Math.min(count, 9)) });
@@ -34,6 +36,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       count: message.count || 0,
     });
   }
+  // Provide current state to popup
+  if (message && message.type === "GET_STATE_FOR_POPUP") {
+    const msgTabId =
+      message && typeof message.tabId === "number" ? message.tabId : null;
+    const senderTabId =
+      sender.tab && sender.tab.id != null ? sender.tab.id : null;
+    const useTabId = msgTabId != null ? msgTabId : senderTabId;
+    if (useTabId != null) {
+      const state = tabVideoState.get(useTabId) || {
+        hasVideo: false,
+        count: 0,
+      };
+      sendResponse(state);
+      return true;
+    }
+    // Fallback: query active tab in current window
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs && tabs[0];
+      const activeId = tab && tab.id != null ? tab.id : null;
+      const state =
+        activeId != null
+          ? tabVideoState.get(activeId) || { hasVideo: false, count: 0 }
+          : { hasVideo: false, count: 0 };
+      sendResponse(state);
+    });
+    return true; // keep the message channel open for async response
+  }
   if (message && message.type === "REQUEST_PIP_FROM_POPUP") {
     if (sender.tab && sender.tab.id != null) {
       chrome.tabs.sendMessage(sender.tab.id, { type: "DO_PIP" });
@@ -49,7 +78,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   } else {
     chrome.notifications.create({
       type: "basic",
-      iconUrl: "assets/icons/icon-128-gray.png",
+      iconUrl: ICON_GRAY_URL,
       title: "未检测到视频",
       message: "当前页面未检测到任何可用的视频元素",
     });
