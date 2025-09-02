@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "视频小窗助手",
+  "name": "__MSG_extName__",
   "version": "0.0.1",
-  "description": "检测网页视频并一键以小窗（画中画）播放。",
+  "default_locale": "zh_CN",
+  "description": "__MSG_extDescription__",
   "action": {
-    "default_title": "小窗播放",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "popup/popup.html",
     "default_icon": "assets/icons/logo.png"
   },
@@ -23,7 +24,7 @@
       "suggested_key": {
         "default": "Alt+Shift+V"
       },
-      "description": "打开当前页面最大可用视频的小窗（画中画）"
+      "description": "__MSG_cmdTogglePipDesc__"
     }
   },
   "permissions": ["tabs", "scripting", "activeTab", "notifications"],

@@ -1,0 +1,25 @@
+{
+  "extName": { "message": "Помощник PiP" },
+  "extDescription": { "message": "Определяет видео на страницах и открывает режим «Картинка в картинке» в один клик." },
+  "actionTitle": { "message": "Открыть PiP" },
+  "cmdTogglePipDesc": { "message": "Открыть самое крупное видео на странице в режиме «Картинка в картинке»" },
+
+  "statusReady": { "message": "Готово" },
+  "statusNoVideo": { "message": "Подходящих видео не найдено" },
+  "statusDetectedOne": { "message": "Найдено 1 видео" },
+  "statusDetectedMany": { "message": "Найдено $COUNT$ видео", "placeholders": { "count": { "content": "$1" } } },
+
+  "btnOpen": { "message": "Открыть PiP" },
+  "btnNoVideo": { "message": "Нет видео" },
+
+  "notifNoVideoTitle": { "message": "Видео не найдено" },
+  "notifNoVideoMsg": { "message": "На этой странице не найдено подходящих видео" },
+  "notifCannotOpenTitle": { "message": "Не удалось открыть PiP" },
+  "notifCannotOpenMsg": { "message": "Возможно требуется действие пользователя, либо страница не поддерживает PiP" },
+
+  "popupTitle": { "message": "Открыть PiP" },
+  "popupHeader": { "message": "Помощник PiP" },
+  "statusScanning": { "message": "Сканирование..." },
+  "btnOpenPiP": { "message": "Открыть PiP" }
+}
+

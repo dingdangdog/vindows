@@ -79,8 +79,8 @@ chrome.action.onClicked.addListener(async (tab) => {
     chrome.notifications.create({
       type: "basic",
       iconUrl: ICON_GRAY_URL,
-      title: "未检测到视频",
-      message: "当前页面未检测到任何可用的视频元素",
+      title: chrome.i18n.getMessage('notifNoVideoTitle') || "未检测到视频",
+      message: chrome.i18n.getMessage('notifNoVideoMsg') || "当前页面未检测到任何可用的视频元素",
     });
   }
 });
@@ -148,8 +148,8 @@ chrome.commands.onCommand.addListener(async (command) => {
         chrome.notifications.create({
           type: "basic",
           iconUrl: ICON_GRAY_URL,
-          title: "无法打开小窗",
-          message: "该页面不支持或无法注入脚本",
+          title: chrome.i18n.getMessage('notifCannotOpenTitle') || "无法打开小窗",
+          message: chrome.i18n.getMessage('notifCannotOpenMsg') || "该页面不支持或无法注入脚本",
         });
         return;
       }
@@ -158,8 +158,8 @@ chrome.commands.onCommand.addListener(async (command) => {
         chrome.notifications.create({
           type: "basic",
           iconUrl: ICON_GRAY_URL,
-          title: "无法打开小窗",
-          message: "可能需要用户手势，或页面不支持画中画",
+          title: chrome.i18n.getMessage('notifCannotOpenTitle') || "无法打开小窗",
+          message: chrome.i18n.getMessage('notifCannotOpenMsg') || "可能需要用户手势，或页面不支持画中画",
         });
       }
     });

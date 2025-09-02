@@ -25,14 +25,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const hasVideo = !!(state && state.hasVideo);
     const count = state && state.count ? state.count : 0;
     if (hasVideo) {
-      statusEl.textContent =
-        count > 1 ? `检测到 ${count} 个视频` : "检测到 1 个视频";
+      statusEl.textContent = count > 1
+        ? chrome.i18n.getMessage('statusDetectedMany', String(count))
+        : chrome.i18n.getMessage('statusDetectedOne');
       btn.disabled = false;
-      btn.textContent = "开启小窗";
+      btn.textContent = chrome.i18n.getMessage('btnOpen');
     } else {
-      statusEl.textContent = "未检测到可用视频";
+      statusEl.textContent = chrome.i18n.getMessage('statusNoVideo');
       btn.disabled = true;
-      btn.textContent = "无可用视频";
+      btn.textContent = chrome.i18n.getMessage('btnNoVideo');
     }
   }
 
@@ -68,6 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     renderState(state);
   } catch (_) {
-    statusEl.textContent = "准备就绪";
+    statusEl.textContent = chrome.i18n.getMessage('statusReady');
   }
 });

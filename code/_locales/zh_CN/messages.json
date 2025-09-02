@@ -1,0 +1,25 @@
+{
+  "extName": { "message": "视频小窗助手" },
+  "extDescription": { "message": "检测网页视频并一键以小窗（画中画）播放。" },
+  "actionTitle": { "message": "小窗播放" },
+  "cmdTogglePipDesc": { "message": "打开当前页面最大可用视频的小窗（画中画）" },
+
+  "statusReady": { "message": "准备就绪" },
+  "statusNoVideo": { "message": "未检测到可用视频" },
+  "statusDetectedOne": { "message": "检测到 1 个视频" },
+  "statusDetectedMany": { "message": "检测到 $COUNT$ 个视频", "placeholders": { "count": { "content": "$1" } } },
+
+  "btnOpen": { "message": "开启小窗" },
+  "btnNoVideo": { "message": "无可用视频" },
+
+  "notifNoVideoTitle": { "message": "未检测到视频" },
+  "notifNoVideoMsg": { "message": "当前页面未检测到任何可用的视频元素" },
+  "notifCannotOpenTitle": { "message": "无法打开小窗" },
+  "notifCannotOpenMsg": { "message": "可能需要用户手势，或页面不支持画中画" },
+
+  "popupTitle": { "message": "小窗播放" },
+  "popupHeader": { "message": "视频小窗助手" },
+  "statusScanning": { "message": "检测中..." },
+  "btnOpenPiP": { "message": "开启小窗" }
+}
+
