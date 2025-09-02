@@ -25,15 +25,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const hasVideo = !!(state && state.hasVideo);
     const count = state && state.count ? state.count : 0;
     if (hasVideo) {
-      statusEl.textContent = count > 1
-        ? chrome.i18n.getMessage('statusDetectedMany', String(count))
-        : chrome.i18n.getMessage('statusDetectedOne');
+      statusEl.textContent =
+        count > 1
+          ? chrome.i18n.getMessage("statusDetectedMany", String(count))
+          : chrome.i18n.getMessage("statusDetectedOne");
       btn.disabled = false;
-      btn.textContent = chrome.i18n.getMessage('btnOpen');
+      btn.textContent = chrome.i18n.getMessage("btnOpen");
     } else {
-      statusEl.textContent = chrome.i18n.getMessage('statusNoVideo');
+      statusEl.textContent = chrome.i18n.getMessage("statusNoVideo");
       btn.disabled = true;
-      btn.textContent = chrome.i18n.getMessage('btnNoVideo');
+      btn.textContent = chrome.i18n.getMessage("btnNoVideo");
     }
   }
 
@@ -69,6 +70,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     renderState(state);
   } catch (_) {
-    statusEl.textContent = chrome.i18n.getMessage('statusReady');
+    statusEl.textContent = chrome.i18n.getMessage("statusReady");
   }
 });
