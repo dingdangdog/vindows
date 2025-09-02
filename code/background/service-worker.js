@@ -1,13 +1,50 @@
 const tabVideoState = new Map();
+let isServiceWorkerReady = false;
 
 // Global error guards to prevent unexpected crashes
-self.addEventListener('unhandledrejection', (e) => {
-  try { e.preventDefault(); } catch (_) {}
-  try { console.warn('SW unhandled rejection:', e && e.reason); } catch (_) {}
+self.addEventListener("unhandledrejection", (e) => {
+  try {
+    e.preventDefault();
+  } catch (_) {}
+  try {
+    console.warn("SW unhandled rejection:", e && e.reason);
+  } catch (_) {}
 });
-self.addEventListener('error', (e) => {
-  try { console.warn('SW error:', e && (e.error || e.message)); } catch (_) {}
+self.addEventListener("error", (e) => {
+  try {
+    console.warn("SW error:", e && (e.error || e.message));
+  } catch (_) {}
 });
+
+// Mark service worker as ready when installed/activated
+self.addEventListener("install", () => {
+  isServiceWorkerReady = true;
+});
+
+self.addEventListener("activate", () => {
+  isServiceWorkerReady = true;
+});
+
+// Helper function to safely send messages
+function safeSendMessage(tabId, message, callback) {
+  if (!isServiceWorkerReady) {
+    if (callback) callback();
+    return;
+  }
+
+  try {
+    chrome.tabs.sendMessage(tabId, message, (response) => {
+      if (chrome.runtime.lastError) {
+        // Content script not available, ignore error
+        console.debug("Content script not available for tab:", tabId);
+      }
+      if (callback) callback(response);
+    });
+  } catch (e) {
+    console.debug("Error sending message to tab:", tabId, e);
+    if (callback) callback();
+  }
+}
 
 // Pre-resolve icon URLs to absolute extension URLs to avoid fetch issues
 const ICON_COLOR_URL = chrome.runtime.getURL("assets/icons/logo.png");
@@ -69,17 +106,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           activeId != null
             ? tabVideoState.get(activeId) || { hasVideo: false, count: 0 }
             : { hasVideo: false, count: 0 };
-        try { sendResponse(state); } catch (_) {}
+        try {
+          sendResponse(state);
+        } catch (_) {}
       });
       return true; // keep the message channel open for async response
     }
     if (message && message.type === "REQUEST_PIP_FROM_POPUP") {
       if (sender.tab && sender.tab.id != null) {
-        try { chrome.tabs.sendMessage(sender.tab.id, { type: "DO_PIP" }); } catch (_) {}
+        safeSendMessage(sender.tab.id, { type: "DO_PIP" });
       }
     }
   } catch (e) {
-    try { console.warn('onMessage handler error:', e); } catch (_) {}
+    try {
+      console.warn("onMessage handler error:", e);
+    } catch (_) {}
   }
 });
 
@@ -87,24 +128,73 @@ chrome.action.onClicked.addListener(async (tab) => {
   if (!tab || tab.id == null) return;
   const state = tabVideoState.get(tab.id) || { hasVideo: false, count: 0 };
   if (state.hasVideo) {
-    chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" });
+    chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (response) => {
+      if (chrome.runtime.lastError) {
+        // Content script not available, try to inject it first
+        chrome.scripting
+          .executeScript({
+            target: { tabId: tab.id },
+            files: ["content/detect.js"],
+          })
+          .then(() => {
+            // Retry after injection
+            setTimeout(() => {
+              chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" });
+            }, 100);
+          })
+          .catch(() => {
+            // Cannot inject, show notification
+            chrome.notifications.create({
+              type: "basic",
+              iconUrl: ICON_GRAY_URL,
+              title:
+                chrome.i18n.getMessage("notifCannotOpenTitle") ||
+                "无法打开小窗",
+              message:
+                chrome.i18n.getMessage("notifCannotOpenMsg") ||
+                "该页面不支持或无法注入脚本",
+            });
+          });
+      }
+    });
   } else {
     chrome.notifications.create({
       type: "basic",
       iconUrl: ICON_GRAY_URL,
-      title: chrome.i18n.getMessage('notifNoVideoTitle') || "未检测到视频",
-      message: chrome.i18n.getMessage('notifNoVideoMsg') || "当前页面未检测到任何可用的视频元素",
+      title: chrome.i18n.getMessage("notifNoVideoTitle") || "未检测到视频",
+      message:
+        chrome.i18n.getMessage("notifNoVideoMsg") ||
+        "当前页面未检测到任何可用的视频元素",
     });
   }
 });
 
 function rescanTab(tabId) {
   try {
-    chrome.tabs.sendMessage(tabId, { type: "RESCAN" }, () => {
+    // Check if tab is accessible before sending message
+    chrome.tabs.get(tabId, (tab) => {
       if (chrome.runtime.lastError) {
-        // Content script likely not injected (e.g., chrome:// or PDF). Mark as no video.
+        // Tab doesn't exist or is not accessible
         markNoVideo(tabId);
+        return;
       }
+
+      // Check if we can inject content script into this tab
+      if (
+        tab.url &&
+        (tab.url.startsWith("chrome://") ||
+          tab.url.startsWith("chrome-extension://") ||
+          tab.url.startsWith("moz-extension://"))
+      ) {
+        // Cannot inject into chrome:// pages
+        markNoVideo(tabId);
+        return;
+      }
+
+      safeSendMessage(tabId, { type: "RESCAN" }, () => {
+        // If safeSendMessage fails, mark as no video
+        markNoVideo(tabId);
+      });
     });
   } catch (e) {
     markNoVideo(tabId);
@@ -161,8 +251,11 @@ chrome.commands.onCommand.addListener(async (command) => {
         chrome.notifications.create({
           type: "basic",
           iconUrl: ICON_GRAY_URL,
-          title: chrome.i18n.getMessage('notifCannotOpenTitle') || "无法打开小窗",
-          message: chrome.i18n.getMessage('notifCannotOpenMsg') || "该页面不支持或无法注入脚本",
+          title:
+            chrome.i18n.getMessage("notifCannotOpenTitle") || "无法打开小窗",
+          message:
+            chrome.i18n.getMessage("notifCannotOpenMsg") ||
+            "该页面不支持或无法注入脚本",
         });
         return;
       }
@@ -171,8 +264,11 @@ chrome.commands.onCommand.addListener(async (command) => {
         chrome.notifications.create({
           type: "basic",
           iconUrl: ICON_GRAY_URL,
-          title: chrome.i18n.getMessage('notifCannotOpenTitle') || "无法打开小窗",
-          message: chrome.i18n.getMessage('notifCannotOpenMsg') || "可能需要用户手势，或页面不支持画中画",
+          title:
+            chrome.i18n.getMessage("notifCannotOpenTitle") || "无法打开小窗",
+          message:
+            chrome.i18n.getMessage("notifCannotOpenMsg") ||
+            "可能需要用户手势，或页面不支持画中画",
         });
       }
     });

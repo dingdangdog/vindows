@@ -18,19 +18,27 @@ async function updateStatus() {
 }
 
 // Swallow unexpected rejections/errors to avoid cryptic extension errors UI
-window.addEventListener('unhandledrejection', (e) => {
-  try { e.preventDefault(); } catch (_) {}
-  try { console.warn('Unhandled rejection in popup:', e && e.reason); } catch (_) {}
+window.addEventListener("unhandledrejection", (e) => {
+  try {
+    e.preventDefault();
+  } catch (_) {}
+  try {
+    console.warn("Unhandled rejection in popup:", e && e.reason);
+  } catch (_) {}
 });
-window.addEventListener('error', (e) => {
-  try { console.warn('Unhandled error in popup:', e && (e.error || e.message)); } catch (_) {}
+window.addEventListener("error", (e) => {
+  try {
+    console.warn("Unhandled error in popup:", e && (e.error || e.message));
+  } catch (_) {}
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const btn = document.getElementById("pipBtn");
   if (!statusEl || !btn) {
-    try { console.warn('Popup elements missing'); } catch (_) {}
+    try {
+      console.warn("Popup elements missing");
+    } catch (_) {}
     return;
   }
 
@@ -55,8 +63,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tab = await getCurrentTab();
     if (!tab) return;
     try {
-      await new Promise((resolve) => {
-        chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, () => resolve());
+      await new Promise((resolve, reject) => {
+        chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (response) => {
+          if (chrome.runtime.lastError) {
+            // Content script not available, try to inject it first
+            chrome.scripting
+              .executeScript({
+                target: { tabId: tab.id },
+                files: ["content/detect.js"],
+              })
+              .then(() => {
+                // Retry after injection
+                setTimeout(() => {
+                  chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, () =>
+                    resolve()
+                  );
+                }, 100);
+              })
+              .catch(() => {
+                reject(new Error("Cannot inject content script"));
+              });
+          } else {
+            resolve();
+          }
+        });
       });
     } catch (e) {
       // if content script not ready, try nudge with RESCAN
@@ -83,6 +113,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     renderState(state);
   } catch (_) {
-    try { statusEl.textContent = chrome.i18n.getMessage("statusReady"); } catch (_) {}
+    try {
+      statusEl.textContent = chrome.i18n.getMessage("statusReady");
+    } catch (_) {}
   }
 });

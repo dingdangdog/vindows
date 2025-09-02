@@ -100,12 +100,14 @@
           () => {
             // ignore response; check for lastError to avoid unchecked exceptions
             if (chrome.runtime && chrome.runtime.lastError) {
-              // noop
+              // Service worker might not be ready, ignore error
+              console.debug("Service worker not ready for message");
             }
           }
         );
       } catch (e) {
-        // noop
+        // Runtime not available, ignore error
+        console.debug("Runtime not available for message");
       }
       return candidates;
     } catch (_) {
@@ -201,12 +203,14 @@
                 { type: "VIDEO_STATE", hasVideo: false, count: 0 },
                 () => {
                   if (chrome.runtime && chrome.runtime.lastError) {
-                    // noop
+                    // Service worker might not be ready, ignore error
+                    console.debug("Service worker not ready for state update");
                   }
                 }
               );
             } catch (e) {
-              // noop
+              // Runtime not available, ignore error
+              console.debug("Runtime not available for state update");
             }
           }
           try {
