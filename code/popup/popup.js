@@ -17,9 +17,22 @@ async function updateStatus() {
   }
 }
 
+// Swallow unexpected rejections/errors to avoid cryptic extension errors UI
+window.addEventListener('unhandledrejection', (e) => {
+  try { e.preventDefault(); } catch (_) {}
+  try { console.warn('Unhandled rejection in popup:', e && e.reason); } catch (_) {}
+});
+window.addEventListener('error', (e) => {
+  try { console.warn('Unhandled error in popup:', e && (e.error || e.message)); } catch (_) {}
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const btn = document.getElementById("pipBtn");
+  if (!statusEl || !btn) {
+    try { console.warn('Popup elements missing'); } catch (_) {}
+    return;
+  }
 
   function renderState(state) {
     const hasVideo = !!(state && state.hasVideo);
@@ -70,6 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     renderState(state);
   } catch (_) {
-    statusEl.textContent = chrome.i18n.getMessage("statusReady");
+    try { statusEl.textContent = chrome.i18n.getMessage("statusReady"); } catch (_) {}
   }
 });

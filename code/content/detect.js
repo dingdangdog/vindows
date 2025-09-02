@@ -1,4 +1,14 @@
 (() => {
+  // Global guards for unexpected errors in content script
+  try {
+    window.addEventListener('unhandledrejection', (e) => {
+      try { e.preventDefault(); } catch (_) {}
+      try { console.warn('CS unhandled rejection:', e && e.reason); } catch (_) {}
+    });
+    window.addEventListener('error', (e) => {
+      try { console.warn('CS error:', e && (e.error || e.message)); } catch (_) {}
+    });
+  } catch (_) {}
   function isElementVisible(el) {
     const rect = el.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return false;

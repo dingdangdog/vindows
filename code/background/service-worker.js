@@ -1,5 +1,14 @@
 const tabVideoState = new Map();
 
+// Global error guards to prevent unexpected crashes
+self.addEventListener('unhandledrejection', (e) => {
+  try { e.preventDefault(); } catch (_) {}
+  try { console.warn('SW unhandled rejection:', e && e.reason); } catch (_) {}
+});
+self.addEventListener('error', (e) => {
+  try { console.warn('SW error:', e && (e.error || e.message)); } catch (_) {}
+});
+
 // Pre-resolve icon URLs to absolute extension URLs to avoid fetch issues
 const ICON_COLOR_URL = chrome.runtime.getURL("assets/icons/logo.png");
 const ICON_GRAY_URL = chrome.runtime.getURL("assets/icons/logo_gray.png");
@@ -25,48 +34,52 @@ function updateState(tabId, state) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (
-    message &&
-    message.type === "VIDEO_STATE" &&
-    sender.tab &&
-    sender.tab.id != null
-  ) {
-    updateState(sender.tab.id, {
-      hasVideo: !!message.hasVideo,
-      count: message.count || 0,
-    });
-  }
-  // Provide current state to popup
-  if (message && message.type === "GET_STATE_FOR_POPUP") {
-    const msgTabId =
-      message && typeof message.tabId === "number" ? message.tabId : null;
-    const senderTabId =
-      sender.tab && sender.tab.id != null ? sender.tab.id : null;
-    const useTabId = msgTabId != null ? msgTabId : senderTabId;
-    if (useTabId != null) {
-      const state = tabVideoState.get(useTabId) || {
-        hasVideo: false,
-        count: 0,
-      };
-      sendResponse(state);
-      return true;
+  try {
+    if (
+      message &&
+      message.type === "VIDEO_STATE" &&
+      sender.tab &&
+      sender.tab.id != null
+    ) {
+      updateState(sender.tab.id, {
+        hasVideo: !!message.hasVideo,
+        count: message.count || 0,
+      });
     }
-    // Fallback: query active tab in current window
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs && tabs[0];
-      const activeId = tab && tab.id != null ? tab.id : null;
-      const state =
-        activeId != null
-          ? tabVideoState.get(activeId) || { hasVideo: false, count: 0 }
-          : { hasVideo: false, count: 0 };
-      sendResponse(state);
-    });
-    return true; // keep the message channel open for async response
-  }
-  if (message && message.type === "REQUEST_PIP_FROM_POPUP") {
-    if (sender.tab && sender.tab.id != null) {
-      chrome.tabs.sendMessage(sender.tab.id, { type: "DO_PIP" });
+    // Provide current state to popup
+    if (message && message.type === "GET_STATE_FOR_POPUP") {
+      const msgTabId =
+        message && typeof message.tabId === "number" ? message.tabId : null;
+      const senderTabId =
+        sender.tab && sender.tab.id != null ? sender.tab.id : null;
+      const useTabId = msgTabId != null ? msgTabId : senderTabId;
+      if (useTabId != null) {
+        const state = tabVideoState.get(useTabId) || {
+          hasVideo: false,
+          count: 0,
+        };
+        sendResponse(state);
+        return true;
+      }
+      // Fallback: query active tab in current window
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs && tabs[0];
+        const activeId = tab && tab.id != null ? tab.id : null;
+        const state =
+          activeId != null
+            ? tabVideoState.get(activeId) || { hasVideo: false, count: 0 }
+            : { hasVideo: false, count: 0 };
+        try { sendResponse(state); } catch (_) {}
+      });
+      return true; // keep the message channel open for async response
     }
+    if (message && message.type === "REQUEST_PIP_FROM_POPUP") {
+      if (sender.tab && sender.tab.id != null) {
+        try { chrome.tabs.sendMessage(sender.tab.id, { type: "DO_PIP" }); } catch (_) {}
+      }
+    }
+  } catch (e) {
+    try { console.warn('onMessage handler error:', e); } catch (_) {}
   }
 });
 
