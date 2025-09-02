@@ -1,6 +1,6 @@
 # Privacy Policy
 
-> Effective Date: 2025-01-01
+> Effective Date: 2025-09-02
 
 Vindows values your privacy. We follow a strict minimisation principle: all processing happens locally in your browser. We do not collect, sell, or share any personally identifiable information.
 
