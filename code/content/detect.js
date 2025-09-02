@@ -102,6 +102,24 @@
     attributeFilter: ["style", "class"],
   });
 
+  // Keep detection fresh on tab visibility/focus changes
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (!document.hidden) {
+        throttleReport();
+      }
+    },
+    { passive: true }
+  );
+  window.addEventListener(
+    "focus",
+    () => {
+      throttleReport();
+    },
+    { passive: true }
+  );
+
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg && msg.type === "DO_PIP") {
       Promise.resolve(requestPiP()).then((ok) => {

@@ -112,6 +112,15 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   tabVideoState.delete(tabId);
 });
 
+// Rescan when browser window focus changes
+chrome.windows.onFocusChanged.addListener(async (windowId) => {
+  if (windowId === chrome.windows.WINDOW_ID_NONE) return;
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, windowId });
+    if (tab && tab.id != null) rescanTab(tab.id);
+  } catch (_) {}
+});
+
 // Keyboard command: toggle PiP via Ctrl+Alt+V (configured in manifest)
 chrome.commands.onCommand.addListener(async (command) => {
   if (command !== "toggle-pip") return;
@@ -121,6 +130,13 @@ chrome.commands.onCommand.addListener(async (command) => {
       currentWindow: true,
     });
     if (!tab || tab.id == null) return;
+    // Ensure window and tab are focused so sites requiring user gesture are more likely to allow PiP
+    try {
+      await chrome.windows.update(tab.windowId, { focused: true });
+    } catch (_) {}
+    try {
+      await chrome.tabs.update(tab.id, { active: true });
+    } catch (_) {}
     // Nudge a rescan to refresh detection
     try {
       await chrome.tabs.sendMessage(tab.id, { type: "RESCAN" });
