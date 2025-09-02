@@ -2,6 +2,12 @@
 
 A lightweight extension that detects videos on any page and opens them in Picture‑in‑Picture (PiP) with one click. It supports multiple languages, keyboard shortcuts, and resilient re‑detection so you can pop out videos at any time.
 
+## Screenshots
+
+|English(United States)|Chinese(Simplified)|
+|--|--|
+|![en_us](./screenshots/en_US_2.png)|![zh_CN](./screenshots/zh_CN_1.png)|
+
 ## Features
 
 - Auto‑detects video elements (incl. live streams and common players)
