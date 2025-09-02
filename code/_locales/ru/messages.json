@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "Помощник PiP" },
+  "extName": { "message": "Vindows" },
   "extDescription": { "message": "Определяет видео на страницах и открывает режим «Картинка в картинке» в один клик." },
   "actionTitle": { "message": "Открыть PiP" },
   "cmdTogglePipDesc": { "message": "Открыть самое крупное видео на странице в режиме «Картинка в картинке»" },
@@ -17,8 +17,8 @@
   "notifCannotOpenTitle": { "message": "Не удалось открыть PiP" },
   "notifCannotOpenMsg": { "message": "Возможно требуется действие пользователя, либо страница не поддерживает PiP" },
 
-  "popupTitle": { "message": "Открыть PiP" },
-  "popupHeader": { "message": "Помощник PiP" },
+  "popupTitle": { "message": "Vindows" },
+  "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "Сканирование..." },
   "btnOpenPiP": { "message": "Открыть PiP" }
 }

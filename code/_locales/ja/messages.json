@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "PiP ヘルパー" },
+  "extName": { "message": "Vindows" },
   "extDescription": { "message": "ページ上の動画を検出し、ワンクリックでピクチャーインピクチャーを開きます。" },
   "actionTitle": { "message": "PiP を開く" },
   "cmdTogglePipDesc": { "message": "ページ内で最も大きい動画をピクチャーインピクチャーで開く" },
@@ -17,8 +17,8 @@
   "notifCannotOpenTitle": { "message": "PiP を開けません" },
   "notifCannotOpenMsg": { "message": "ユーザー操作が必要、またはページが PiP をサポートしていません" },
 
-  "popupTitle": { "message": "PiP を開く" },
-  "popupHeader": { "message": "PiP ヘルパー" },
+  "popupTitle": { "message": "Vindows" },
+  "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "スキャン中..." },
   "btnOpenPiP": { "message": "PiP を開く" }
 }

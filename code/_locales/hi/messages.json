@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "PiP सहायक" },
+  "extName": { "message": "Vindows" },
   "extDescription": { "message": "पृष्ठों पर वीडियो खोजें और एक क्लिक में पिक्चर-इन-पिक्चर खोलें।" },
   "actionTitle": { "message": "PiP खोलें" },
   "cmdTogglePipDesc": { "message": "वर्तमान पृष्ठ के सबसे बड़े वीडियो को पिक्चर-इन-पिक्चर में खोलें" },
@@ -17,8 +17,8 @@
   "notifCannotOpenTitle": { "message": "PiP नहीं खोल पाए" },
   "notifCannotOpenMsg": { "message": "शायद उपयोगकर्ता जेस्चर चाहिए, या पृष्ठ PiP का समर्थन नहीं करता" },
 
-  "popupTitle": { "message": "PiP खोलें" },
-  "popupHeader": { "message": "PiP सहायक" },
+  "popupTitle": { "message": "Vindows" },
+  "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "स्कैन हो रहा है..." },
   "btnOpenPiP": { "message": "PiP खोलें" }
 }
