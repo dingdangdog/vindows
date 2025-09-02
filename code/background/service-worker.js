@@ -111,3 +111,41 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
   tabVideoState.delete(tabId);
 });
+
+// Keyboard command: toggle PiP via Ctrl+Alt+V (configured in manifest)
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command !== "toggle-pip") return;
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    if (!tab || tab.id == null) return;
+    // Nudge a rescan to refresh detection
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: "RESCAN" });
+    } catch (_) {}
+    // Always attempt PiP regardless of cached state to match popup behavior
+    chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (resp) => {
+      if (chrome.runtime.lastError) {
+        // content script not available in this page (e.g., chrome:// or PDF)
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: ICON_GRAY_URL,
+          title: "无法打开小窗",
+          message: "该页面不支持或无法注入脚本",
+        });
+        return;
+      }
+      const ok = resp && resp.ok;
+      if (!ok) {
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: ICON_GRAY_URL,
+          title: "无法打开小窗",
+          message: "可能需要用户手势，或页面不支持画中画",
+        });
+      }
+    });
+  } catch (_) {}
+});

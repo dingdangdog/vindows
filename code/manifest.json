@@ -12,6 +12,14 @@
     "service_worker": "background/service-worker.js",
     "type": "module"
   },
+  "commands": {
+    "toggle-pip": {
+      "suggested_key": {
+        "default": "Alt+Shift+V"
+      },
+      "description": "打开当前页面最大可用视频的小窗（画中画）"
+    }
+  },
   "permissions": ["tabs", "scripting", "activeTab", "notifications"],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
