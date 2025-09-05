@@ -28,7 +28,7 @@
       "description": "__MSG_cmdTogglePipDesc__"
     }
   },
-  "permissions": ["tabs", "activeTab", "notifications"],
+  "permissions": ["activeTab", "notifications"],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
