@@ -7,10 +7,14 @@
   "statusReady": { "message": "准备就绪" },
   "statusNoVideo": { "message": "未检测到可用视频" },
   "statusDetectedOne": { "message": "检测到 1 个视频" },
-  "statusDetectedMany": { "message": "检测到 $COUNT$ 个视频", "placeholders": { "count": { "content": "$1" } } },
+  "statusDetectedMany": {
+    "message": "检测到 $COUNT$ 个视频",
+    "placeholders": { "count": { "content": "$1" } }
+  },
 
   "btnOpen": { "message": "开启小窗" },
   "btnNoVideo": { "message": "无可用视频" },
+  "btnRefresh": { "message": "重新检测" },
 
   "notifNoVideoTitle": { "message": "未检测到视频" },
   "notifNoVideoMsg": { "message": "当前页面未检测到任何可用的视频元素" },
@@ -22,4 +26,3 @@
   "statusScanning": { "message": "检测中..." },
   "btnOpenPiP": { "message": "开启小窗" }
 }
-

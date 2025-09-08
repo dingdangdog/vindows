@@ -1,25 +1,36 @@
 {
   "extName": { "message": "Vindows" },
-  "extDescription": { "message": "Определяет видео на страницах и открывает режим «Картинка в картинке» в один клик." },
+  "extDescription": {
+    "message": "Определяет видео на страницах и открывает режим «Картинка в картинке» в один клик."
+  },
   "actionTitle": { "message": "Открыть PiP" },
-  "cmdTogglePipDesc": { "message": "Открыть самое крупное видео на странице в режиме «Картинка в картинке»" },
+  "cmdTogglePipDesc": {
+    "message": "Открыть самое крупное видео на странице в режиме «Картинка в картинке»"
+  },
 
   "statusReady": { "message": "Готово" },
   "statusNoVideo": { "message": "Подходящих видео не найдено" },
   "statusDetectedOne": { "message": "Найдено 1 видео" },
-  "statusDetectedMany": { "message": "Найдено $COUNT$ видео", "placeholders": { "count": { "content": "$1" } } },
+  "statusDetectedMany": {
+    "message": "Найдено $COUNT$ видео",
+    "placeholders": { "count": { "content": "$1" } }
+  },
 
   "btnOpen": { "message": "Открыть PiP" },
   "btnNoVideo": { "message": "Нет видео" },
+  "btnRefresh": { "message": "Обновить" },
 
   "notifNoVideoTitle": { "message": "Видео не найдено" },
-  "notifNoVideoMsg": { "message": "На этой странице не найдено подходящих видео" },
+  "notifNoVideoMsg": {
+    "message": "На этой странице не найдено подходящих видео"
+  },
   "notifCannotOpenTitle": { "message": "Не удалось открыть PiP" },
-  "notifCannotOpenMsg": { "message": "Возможно требуется действие пользователя, либо страница не поддерживает PiP" },
+  "notifCannotOpenMsg": {
+    "message": "Возможно требуется действие пользователя, либо страница не поддерживает PiP"
+  },
 
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "Сканирование..." },
   "btnOpenPiP": { "message": "Открыть PiP" }
 }
-

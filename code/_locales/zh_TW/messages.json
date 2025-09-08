@@ -1,16 +1,22 @@
 {
   "extName": { "message": "Vindows" },
-  "extDescription": { "message": "自動偵測網頁影片並一鍵以小窗（畫中畫）播放。" },
+  "extDescription": {
+    "message": "自動偵測網頁影片並一鍵以小窗（畫中畫）播放。"
+  },
   "actionTitle": { "message": "小窗播放" },
   "cmdTogglePipDesc": { "message": "以小窗（畫中畫）開啟此頁面最大可用影片" },
 
   "statusReady": { "message": "準備就緒" },
   "statusNoVideo": { "message": "未偵測到可播放的影片" },
   "statusDetectedOne": { "message": "偵測到 1 個影片" },
-  "statusDetectedMany": { "message": "偵測到 $COUNT$ 個影片", "placeholders": { "count": { "content": "$1" } } },
+  "statusDetectedMany": {
+    "message": "偵測到 $COUNT$ 個影片",
+    "placeholders": { "count": { "content": "$1" } }
+  },
 
   "btnOpen": { "message": "開啟小窗" },
   "btnNoVideo": { "message": "無可用影片" },
+  "btnRefresh": { "message": "重新檢測" },
 
   "notifNoVideoTitle": { "message": "未偵測到影片" },
   "notifNoVideoMsg": { "message": "此頁面未偵測到任何可用的影片元素" },
@@ -22,4 +28,3 @@
   "statusScanning": { "message": "偵測中..." },
   "btnOpenPiP": { "message": "開啟小窗" }
 }
-

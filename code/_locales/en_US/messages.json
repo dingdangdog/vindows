@@ -1,25 +1,36 @@
 {
   "extName": { "message": "Vindows" },
-  "extDescription": { "message": "Detect videos on pages and open Picture-in-Picture with one click." },
+  "extDescription": {
+    "message": "Detect videos on pages and open Picture-in-Picture with one click."
+  },
   "actionTitle": { "message": "Open PiP" },
-  "cmdTogglePipDesc": { "message": "Open the largest video on the page in Picture-in-Picture" },
+  "cmdTogglePipDesc": {
+    "message": "Open the largest video on the page in Picture-in-Picture"
+  },
 
   "statusReady": { "message": "Ready" },
   "statusNoVideo": { "message": "No playable video detected" },
   "statusDetectedOne": { "message": "1 video detected" },
-  "statusDetectedMany": { "message": "$COUNT$ videos detected", "placeholders": { "count": { "content": "$1" } } },
+  "statusDetectedMany": {
+    "message": "$COUNT$ videos detected",
+    "placeholders": { "count": { "content": "$1" } }
+  },
 
   "btnOpen": { "message": "Open PiP" },
   "btnNoVideo": { "message": "No video" },
+  "btnRefresh": { "message": "Refresh" },
 
   "notifNoVideoTitle": { "message": "No video detected" },
-  "notifNoVideoMsg": { "message": "No playable videos were found on this page" },
+  "notifNoVideoMsg": {
+    "message": "No playable videos were found on this page"
+  },
   "notifCannotOpenTitle": { "message": "Cannot open PiP" },
-  "notifCannotOpenMsg": { "message": "A user gesture may be required, or the page does not support PiP" },
+  "notifCannotOpenMsg": {
+    "message": "A user gesture may be required, or the page does not support PiP"
+  },
 
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "Scanning..." },
   "btnOpenPiP": { "message": "Open PiP" }
 }
-

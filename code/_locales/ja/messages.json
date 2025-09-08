@@ -1,25 +1,36 @@
 {
   "extName": { "message": "Vindows" },
-  "extDescription": { "message": "ページ上の動画を検出し、ワンクリックでピクチャーインピクチャーを開きます。" },
+  "extDescription": {
+    "message": "ページ上の動画を検出し、ワンクリックでピクチャーインピクチャーを開きます。"
+  },
   "actionTitle": { "message": "PiP を開く" },
-  "cmdTogglePipDesc": { "message": "ページ内で最も大きい動画をピクチャーインピクチャーで開く" },
+  "cmdTogglePipDesc": {
+    "message": "ページ内で最も大きい動画をピクチャーインピクチャーで開く"
+  },
 
   "statusReady": { "message": "準備完了" },
   "statusNoVideo": { "message": "再生可能な動画が見つかりません" },
   "statusDetectedOne": { "message": "動画を 1 件検出" },
-  "statusDetectedMany": { "message": "$COUNT$ 件の動画を検出", "placeholders": { "count": { "content": "$1" } } },
+  "statusDetectedMany": {
+    "message": "$COUNT$ 件の動画を検出",
+    "placeholders": { "count": { "content": "$1" } }
+  },
 
   "btnOpen": { "message": "PiP を開く" },
   "btnNoVideo": { "message": "動画なし" },
+  "btnRefresh": { "message": "更新" },
 
   "notifNoVideoTitle": { "message": "動画が見つかりません" },
-  "notifNoVideoMsg": { "message": "このページで再生可能な動画は見つかりませんでした" },
+  "notifNoVideoMsg": {
+    "message": "このページで再生可能な動画は見つかりませんでした"
+  },
   "notifCannotOpenTitle": { "message": "PiP を開けません" },
-  "notifCannotOpenMsg": { "message": "ユーザー操作が必要、またはページが PiP をサポートしていません" },
+  "notifCannotOpenMsg": {
+    "message": "ユーザー操作が必要、またはページが PiP をサポートしていません"
+  },
 
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "スキャン中..." },
   "btnOpenPiP": { "message": "PiP を開く" }
 }
-
