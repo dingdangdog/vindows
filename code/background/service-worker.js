@@ -201,26 +201,50 @@ function rescanTab(tabId) {
   }
 }
 
+// Track recent rescans to prevent excessive triggering
+const recentRescans = new Map();
+const RESCAN_COOLDOWN = 3000; // 3 seconds cooldown between rescans for same tab
+
+function shouldRescan(tabId) {
+  const now = Date.now();
+  const lastRescan = recentRescans.get(tabId);
+  if (lastRescan && now - lastRescan < RESCAN_COOLDOWN) {
+    return false;
+  }
+  recentRescans.set(tabId, now);
+  return true;
+}
+
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  rescanTab(tabId);
+  if (shouldRescan(tabId)) {
+    rescanTab(tabId);
+  }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete") {
+  // Only rescan on complete status change and if URL actually changed
+  if (
+    changeInfo.status === "complete" &&
+    changeInfo.url &&
+    shouldRescan(tabId)
+  ) {
     rescanTab(tabId);
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   tabVideoState.delete(tabId);
+  recentRescans.delete(tabId);
 });
 
-// Rescan when browser window focus changes
+// Reduce window focus change triggers - only rescan if tab hasn't been scanned recently
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
   if (windowId === chrome.windows.WINDOW_ID_NONE) return;
   try {
     const [tab] = await chrome.tabs.query({ active: true, windowId });
-    if (tab && tab.id != null) rescanTab(tab.id);
+    if (tab && tab.id != null && shouldRescan(tab.id)) {
+      rescanTab(tab.id);
+    }
   } catch (_) {}
 });
 

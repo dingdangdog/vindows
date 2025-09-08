@@ -132,29 +132,102 @@
     }
   }
 
-  const observer = new MutationObserver(() => {
+  const observer = new MutationObserver((mutations) => {
     try {
-      throttleReport();
+      // Only trigger if mutations are relevant to video detection
+      let shouldCheck = false;
+      for (const mutation of mutations) {
+        // Check for video-related changes
+        if (mutation.type === "childList") {
+          for (const node of [
+            ...mutation.addedNodes,
+            ...mutation.removedNodes,
+          ]) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node;
+              if (
+                element.tagName === "VIDEO" ||
+                (element.querySelector && element.querySelector("video")) ||
+                element.className?.includes("video") ||
+                element.className?.includes("media")
+              ) {
+                shouldCheck = true;
+                break;
+              }
+            }
+          }
+        } else if (mutation.type === "attributes") {
+          const target = mutation.target;
+          if (
+            target.tagName === "VIDEO" ||
+            (mutation.attributeName === "src" && target.tagName === "VIDEO") ||
+            (mutation.attributeName === "style" && target.tagName === "VIDEO")
+          ) {
+            shouldCheck = true;
+          }
+        }
+        if (shouldCheck) break;
+      }
+
+      if (shouldCheck) {
+        throttleReport();
+      }
     } catch (_) {}
   });
 
   let throttleTimer = null;
+  let lastReportTime = 0;
+  const REPORT_COOLDOWN = 1000; // Increased from 500ms to 1000ms to reduce flickering
+
   function throttleReport() {
     if (throttleTimer) return;
+
+    const now = Date.now();
+    const timeSinceLastReport = now - lastReportTime;
+
+    // If we reported recently, wait longer before next report
+    const delay = timeSinceLastReport < REPORT_COOLDOWN ? REPORT_COOLDOWN : 500;
+
     throttleTimer = setTimeout(() => {
       throttleTimer = null;
+      lastReportTime = Date.now();
       try {
         reportState();
       } catch (_) {}
-    }, 500);
+    }, delay);
   }
 
-  // Initial scan with delay to let dynamic content load
-  setTimeout(() => {
+  // Wait for page to be more fully rendered before initial scan
+  function waitForPageReady() {
+    return new Promise((resolve) => {
+      // Check if page is already loaded and rendered
+      if (document.readyState === "complete") {
+        // Additional delay for dynamic content and rendering
+        setTimeout(resolve, 2000);
+        return;
+      }
+
+      // Wait for load event
+      window.addEventListener(
+        "load",
+        () => {
+          // Additional delay after load for dynamic content
+          setTimeout(resolve, 2000);
+        },
+        { once: true }
+      );
+
+      // Fallback timeout in case load event doesn't fire
+      setTimeout(resolve, 5000);
+    });
+  }
+
+  // Initial scan after page is ready
+  waitForPageReady().then(() => {
     try {
       reportState();
     } catch (_) {}
-  }, 1000);
+  });
 
   // More aggressive observer for dynamic sites like x.com
   try {
@@ -166,28 +239,38 @@
     });
   } catch (_) {}
 
-  // Keep detection fresh on tab visibility/focus changes
+  // Keep detection fresh on tab visibility/focus changes (with throttling)
+  let visibilityTimeout = null;
   try {
     document.addEventListener(
       "visibilitychange",
       () => {
-        if (!document.hidden) {
-          try {
-            throttleReport();
-          } catch (_) {}
+        if (!document.hidden && !visibilityTimeout) {
+          visibilityTimeout = setTimeout(() => {
+            visibilityTimeout = null;
+            try {
+              throttleReport();
+            } catch (_) {}
+          }, 1000); // Delay visibility change detection
         }
       },
       { passive: true }
     );
   } catch (_) {}
 
+  let focusTimeout = null;
   try {
     window.addEventListener(
       "focus",
       () => {
-        try {
-          throttleReport();
-        } catch (_) {}
+        if (!focusTimeout) {
+          focusTimeout = setTimeout(() => {
+            focusTimeout = null;
+            try {
+              throttleReport();
+            } catch (_) {}
+          }, 1000); // Delay focus change detection
+        }
       },
       { passive: true }
     );
