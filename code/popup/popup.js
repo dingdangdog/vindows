@@ -9,11 +9,15 @@ async function updateStatus() {
   try {
     await new Promise((resolve) => {
       chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => {
+        // Check for runtime error and handle it gracefully
+        if (chrome.runtime.lastError) {
+          console.debug("Content script not available:", chrome.runtime.lastError.message);
+        }
         resolve();
       });
     });
   } catch (e) {
-    // ignore
+    console.debug("Failed to send RESCAN message:", e);
   }
 }
 
@@ -78,9 +82,12 @@ document.addEventListener("DOMContentLoaded", async () => {
               .then(() => {
                 // Retry after injection
                 setTimeout(() => {
-                  chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, () =>
-                    resolve()
-                  );
+                  chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, () => {
+                    if (chrome.runtime.lastError) {
+                      console.debug("Retry DO_PIP failed:", chrome.runtime.lastError.message);
+                    }
+                    resolve();
+                  });
                 }, 100);
               })
               .catch(() => {
@@ -95,7 +102,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       // if content script not ready, try nudge with RESCAN
       try {
         await new Promise((resolve) => {
-          chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => resolve());
+          chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => {
+            if (chrome.runtime.lastError) {
+              console.debug("RESCAN failed:", chrome.runtime.lastError.message);
+            }
+            resolve();
+          });
         });
       } catch (_) {}
     }
@@ -116,13 +128,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         chrome.runtime.sendMessage(
           { type: "GET_STATE_FOR_POPUP", tabId: tab && tab.id },
           (resp) => {
-            resolve(resp);
+            // Check for runtime error
+            if (chrome.runtime.lastError) {
+              console.debug("Background script not available:", chrome.runtime.lastError.message);
+              resolve({ hasVideo: false, count: 0 });
+              return;
+            }
+            // Use the actual response from background script
+            resolve(resp || { hasVideo: false, count: 0 });
           }
         );
       });
       renderState(state);
     } catch (e) {
       console.warn("Refresh failed:", e);
+      // Fallback to no video state
+      renderState({ hasVideo: false, count: 0 });
     } finally {
       refreshBtn.disabled = false;
       refreshBtn.textContent =
@@ -139,7 +160,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       chrome.runtime.sendMessage(
         { type: "GET_STATE_FOR_POPUP", tabId: tab && tab.id },
         (resp) => {
-          resolve(resp);
+          // Check for runtime error
+          if (chrome.runtime.lastError) {
+            console.debug("Background script not available:", chrome.runtime.lastError.message);
+            resolve({ hasVideo: false, count: 0 });
+            return;
+          }
+          // Use the actual response from background script
+          resolve(resp || { hasVideo: false, count: 0 });
         }
       );
     });
@@ -147,6 +175,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (_) {
     try {
       statusEl.textContent = chrome.i18n.getMessage("statusReady");
+      renderState({ hasVideo: false, count: 0 });
     } catch (_) {}
   }
 });
