@@ -32,5 +32,6 @@
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "Scanning..." },
-  "btnOpenPiP": { "message": "Open PiP" }
+  "btnOpenPiP": { "message": "Open PiP" },
+  "shortcutHint": { "message": "Shortcut: Alt+Shift+V" }
 }

@@ -32,5 +32,6 @@
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "スキャン中..." },
-  "btnOpenPiP": { "message": "PiP を開く" }
+  "btnOpenPiP": { "message": "PiP を開く" },
+  "shortcutHint": { "message": "ショートカット: Alt+Shift+V" }
 }

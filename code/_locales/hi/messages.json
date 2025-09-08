@@ -32,5 +32,6 @@
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "स्कैन हो रहा है..." },
-  "btnOpenPiP": { "message": "PiP खोलें" }
+  "btnOpenPiP": { "message": "PiP खोलें" },
+  "shortcutHint": { "message": "शॉर्टकट: Alt+Shift+V" }
 }

@@ -40,7 +40,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const btn = document.getElementById("pipBtn");
   const refreshBtn = document.getElementById("refreshBtn");
-  if (!statusEl || !btn || !refreshBtn) {
+  const shortcutHint = document.getElementById("shortcutHint");
+  if (!statusEl || !btn || !refreshBtn || !shortcutHint) {
     try {
       console.warn("Popup elements missing");
     } catch (_) {}
@@ -57,11 +58,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           : chrome.i18n.getMessage("statusDetectedOne");
       btn.disabled = false;
       btn.textContent = chrome.i18n.getMessage("btnOpen");
+      shortcutHint.style.display = "block";
       refreshBtn.style.display = "none";
     } else {
       statusEl.textContent = chrome.i18n.getMessage("statusNoVideo");
       btn.disabled = true;
       btn.textContent = chrome.i18n.getMessage("btnNoVideo");
+      shortcutHint.style.display = "none";
       refreshBtn.style.display = "block";
     }
   }

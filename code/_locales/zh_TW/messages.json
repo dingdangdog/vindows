@@ -26,5 +26,6 @@
   "popupTitle": { "message": "Vindows" },
   "popupHeader": { "message": "Vindows" },
   "statusScanning": { "message": "偵測中..." },
-  "btnOpenPiP": { "message": "開啟小窗" }
+  "btnOpenPiP": { "message": "開啟小窗" },
+  "shortcutHint": { "message": "快捷鍵: Alt+Shift+V" }
 }
