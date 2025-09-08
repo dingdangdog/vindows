@@ -11,7 +11,10 @@ async function updateStatus() {
       chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => {
         // Check for runtime error and handle it gracefully
         if (chrome.runtime.lastError) {
-          console.debug("Content script not available:", chrome.runtime.lastError.message);
+          console.debug(
+            "Content script not available:",
+            chrome.runtime.lastError.message
+          );
         }
         resolve();
       });
@@ -50,12 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderState(state) {
     const hasVideo = !!(state && state.hasVideo);
-    const count = state && state.count ? state.count : 0;
     if (hasVideo) {
-      statusEl.textContent =
-        count > 1
-          ? chrome.i18n.getMessage("statusDetectedMany", String(count))
-          : chrome.i18n.getMessage("statusDetectedOne");
+      // Simplified: always show "detected video" without count
+      statusEl.textContent = chrome.i18n.getMessage("statusDetectedOne");
       btn.disabled = false;
       btn.textContent = chrome.i18n.getMessage("btnOpen");
       shortcutHint.style.display = "block";
@@ -87,7 +87,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 setTimeout(() => {
                   chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, () => {
                     if (chrome.runtime.lastError) {
-                      console.debug("Retry DO_PIP failed:", chrome.runtime.lastError.message);
+                      console.debug(
+                        "Retry DO_PIP failed:",
+                        chrome.runtime.lastError.message
+                      );
                     }
                     resolve();
                   });
@@ -133,7 +136,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           (resp) => {
             // Check for runtime error
             if (chrome.runtime.lastError) {
-              console.debug("Background script not available:", chrome.runtime.lastError.message);
+              console.debug(
+                "Background script not available:",
+                chrome.runtime.lastError.message
+              );
               resolve({ hasVideo: false, count: 0 });
               return;
             }
@@ -165,7 +171,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         (resp) => {
           // Check for runtime error
           if (chrome.runtime.lastError) {
-            console.debug("Background script not available:", chrome.runtime.lastError.message);
+            console.debug(
+              "Background script not available:",
+              chrome.runtime.lastError.message
+            );
             resolve({ hasVideo: false, count: 0 });
             return;
           }

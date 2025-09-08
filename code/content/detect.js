@@ -87,7 +87,9 @@
       if (a.playing !== b.playing) return a.playing ? -1 : 1; // playing first
       return b.area - a.area; // larger first
     });
-    return candidates;
+
+    // Return only the best video (if any) to simplify state management
+    return candidates.length > 0 ? [candidates[0]] : [];
   }
 
   function reportState() {

@@ -8,7 +8,7 @@
 
   "statusReady": { "message": "準備就緒" },
   "statusNoVideo": { "message": "未偵測到可播放的影片" },
-  "statusDetectedOne": { "message": "偵測到 1 個影片" },
+  "statusDetectedOne": { "message": "偵測到影片" },
   "statusDetectedMany": {
     "message": "偵測到 $COUNT$ 個影片",
     "placeholders": { "count": { "content": "$1" } }

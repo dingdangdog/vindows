@@ -10,7 +10,7 @@
 
   "statusReady": { "message": "Ready" },
   "statusNoVideo": { "message": "No playable video detected" },
-  "statusDetectedOne": { "message": "1 video detected" },
+  "statusDetectedOne": { "message": "Video detected" },
   "statusDetectedMany": {
     "message": "$COUNT$ videos detected",
     "placeholders": { "count": { "content": "$1" } }

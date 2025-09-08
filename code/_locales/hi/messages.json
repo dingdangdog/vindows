@@ -10,7 +10,7 @@
 
   "statusReady": { "message": "तैयार" },
   "statusNoVideo": { "message": "कोई चलने योग्य वीडियो नहीं मिला" },
-  "statusDetectedOne": { "message": "1 वीडियो मिला" },
+  "statusDetectedOne": { "message": "वीडियो मिला" },
   "statusDetectedMany": {
     "message": "$COUNT$ वीडियो मिले",
     "placeholders": { "count": { "content": "$1" } }

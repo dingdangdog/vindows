@@ -57,12 +57,8 @@ function markNoVideo(tabId) {
 function setIconForTab(tabId, hasVideo, count) {
   const path = hasVideo ? ICON_COLOR_URL : ICON_GRAY_URL;
   chrome.action.setIcon({ tabId, path });
-  if (hasVideo && count > 1) {
-    chrome.action.setBadgeText({ tabId, text: String(Math.min(count, 9)) });
-    chrome.action.setBadgeBackgroundColor({ tabId, color: "#222" });
-  } else {
-    chrome.action.setBadgeText({ tabId, text: "" });
-  }
+  // Simplified: no badge numbers, just color indication
+  chrome.action.setBadgeText({ tabId, text: "" });
 }
 
 function updateState(tabId, state) {

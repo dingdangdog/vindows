@@ -10,7 +10,7 @@
 
   "statusReady": { "message": "Готово" },
   "statusNoVideo": { "message": "Подходящих видео не найдено" },
-  "statusDetectedOne": { "message": "Найдено 1 видео" },
+  "statusDetectedOne": { "message": "Видео найдено" },
   "statusDetectedMany": {
     "message": "Найдено $COUNT$ видео",
     "placeholders": { "count": { "content": "$1" } }

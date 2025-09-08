@@ -10,7 +10,7 @@
 
   "statusReady": { "message": "準備完了" },
   "statusNoVideo": { "message": "再生可能な動画が見つかりません" },
-  "statusDetectedOne": { "message": "動画を 1 件検出" },
+  "statusDetectedOne": { "message": "動画を検出" },
   "statusDetectedMany": {
     "message": "$COUNT$ 件の動画を検出",
     "placeholders": { "count": { "content": "$1" } }
