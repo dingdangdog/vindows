@@ -17,8 +17,20 @@
   <body>
     <div class="wrap">
       <div class="title" data-i18n="popupHeader">Vindows</div>
-      <div id="status" class="status" data-i18n="statusScanning">Scanning...</div>
-      <button id="pipBtn" class="btn" data-i18n="btnOpenPiP">Open PiP</button>
+      <div id="status" class="status" data-i18n="statusScanning">
+        Scanning...
+      </div>
+      <div class="btn-group">
+        <button id="pipBtn" class="btn" data-i18n="btnOpenPiP">Open PiP</button>
+        <button
+          id="refreshBtn"
+          class="btn btn-secondary"
+          data-i18n="btnRefresh"
+          style="display: none"
+        >
+          Refresh
+        </button>
+      </div>
     </div>
   </body>
 </html>

@@ -35,7 +35,8 @@ window.addEventListener("error", (e) => {
 document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const btn = document.getElementById("pipBtn");
-  if (!statusEl || !btn) {
+  const refreshBtn = document.getElementById("refreshBtn");
+  if (!statusEl || !btn || !refreshBtn) {
     try {
       console.warn("Popup elements missing");
     } catch (_) {}
@@ -52,10 +53,12 @@ document.addEventListener("DOMContentLoaded", async () => {
           : chrome.i18n.getMessage("statusDetectedOne");
       btn.disabled = false;
       btn.textContent = chrome.i18n.getMessage("btnOpen");
+      refreshBtn.style.display = "none";
     } else {
       statusEl.textContent = chrome.i18n.getMessage("statusNoVideo");
       btn.disabled = true;
       btn.textContent = chrome.i18n.getMessage("btnNoVideo");
+      refreshBtn.style.display = "block";
     }
   }
 
@@ -95,6 +98,35 @@ document.addEventListener("DOMContentLoaded", async () => {
           chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => resolve());
         });
       } catch (_) {}
+    }
+  });
+
+  // Add refresh button click handler
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent =
+      chrome.i18n.getMessage("statusScanning") || "Scanning...";
+
+    try {
+      await updateStatus();
+
+      // Get updated state after refresh
+      const tab = await getCurrentTab();
+      const state = await new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          { type: "GET_STATE_FOR_POPUP", tabId: tab && tab.id },
+          (resp) => {
+            resolve(resp);
+          }
+        );
+      });
+      renderState(state);
+    } catch (e) {
+      console.warn("Refresh failed:", e);
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent =
+        chrome.i18n.getMessage("btnRefresh") || "Refresh";
     }
   });
 
