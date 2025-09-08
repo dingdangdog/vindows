@@ -11,8 +11,6 @@
 
 ## 扩展需要的权限与用途
 
-- tabs / activeTab：定位当前标签页，向其发送 PiP/检测指令。
-- scripting：注入内容脚本以检测页面视频元素并执行画中画。
 - notifications：在无法开启小窗或未检测到视频时显示系统通知。
 - host_permissions（<all_urls>）：允许在大多数网页上运行检测逻辑。
 

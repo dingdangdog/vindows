@@ -12,8 +12,6 @@ Vindows values your privacy. We follow a strict minimisation principle: all proc
 
 ## Permissions and purposes
 
-- tabs / activeTab: identify the active tab and send PiP/scan messages.
-- scripting: inject content scripts to detect video elements and request PiP.
 - notifications: display notifications when PiP cannot be opened or no video is detected.
 - host_permissions (<all_urls>): allow detection on most websites.
 
