@@ -120,50 +120,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-chrome.action.onClicked.addListener(async (tab) => {
-  if (!tab || tab.id == null) return;
-  const state = tabVideoState.get(tab.id) || { hasVideo: false, count: 0 };
-  if (state.hasVideo) {
-    chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (response) => {
-      if (chrome.runtime.lastError) {
-        // Content script not available, try to inject it first
-        chrome.scripting
-          .executeScript({
-            target: { tabId: tab.id },
-            files: ["content/detect.js"],
-          })
-          .then(() => {
-            // Retry after injection
-            setTimeout(() => {
-              chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" });
-            }, 100);
-          })
-          .catch(() => {
-            // Cannot inject, show notification
-            chrome.notifications.create({
-              type: "basic",
-              iconUrl: ICON_GRAY_URL,
-              title:
-                chrome.i18n.getMessage("notifCannotOpenTitle") ||
-                "无法打开小窗",
-              message:
-                chrome.i18n.getMessage("notifCannotOpenMsg") ||
-                "该页面不支持或无法注入脚本",
-            });
-          });
-      }
-    });
-  } else {
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: ICON_GRAY_URL,
-      title: chrome.i18n.getMessage("notifNoVideoTitle") || "未检测到视频",
-      message:
-        chrome.i18n.getMessage("notifNoVideoMsg") ||
-        "当前页面未检测到任何可用的视频元素",
-    });
-  }
-});
+// Note: chrome.action.onClicked is not used because we have a default_popup set in manifest.json
+// When default_popup is set, clicking the extension icon opens the popup instead of triggering onClicked
 
 function rescanTab(tabId) {
   try {
@@ -260,11 +218,7 @@ chrome.commands.onCommand.addListener(async (command) => {
     try {
       await chrome.tabs.update(tab.id, { active: true });
     } catch (_) {}
-    // Nudge a rescan to refresh detection
-    try {
-      await chrome.tabs.sendMessage(tab.id, { type: "RESCAN" });
-    } catch (_) {}
-    // Always attempt PiP regardless of cached state to match popup behavior
+    // Directly attempt PiP without any refresh logic
     chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (resp) => {
       if (chrome.runtime.lastError) {
         // content script not available in this page (e.g., chrome:// or PDF)
@@ -275,7 +229,7 @@ chrome.commands.onCommand.addListener(async (command) => {
             chrome.i18n.getMessage("notifCannotOpenTitle") || "无法打开小窗",
           message:
             chrome.i18n.getMessage("notifCannotOpenMsg") ||
-            "该页面不支持或无法注入脚本",
+            "该页面不支持或无法注入脚本，请使用扩展弹窗中的刷新按钮",
         });
         return;
       }
@@ -288,7 +242,7 @@ chrome.commands.onCommand.addListener(async (command) => {
             chrome.i18n.getMessage("notifCannotOpenTitle") || "无法打开小窗",
           message:
             chrome.i18n.getMessage("notifCannotOpenMsg") ||
-            "可能需要用户手势，或页面不支持画中画",
+            "可能需要用户手势，或页面不支持画中画，请尝试使用刷新按钮",
         });
       }
     });

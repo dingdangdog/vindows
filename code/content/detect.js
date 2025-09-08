@@ -231,6 +231,14 @@
     } catch (_) {}
   });
 
+  // Also do an immediate scan for refresh scenarios
+  // This helps when content script is re-injected
+  setTimeout(() => {
+    try {
+      reportState();
+    } catch (_) {}
+  }, 100);
+
   // More aggressive observer for dynamic sites like x.com
   try {
     observer.observe(document.documentElement || document.body, {
@@ -307,7 +315,11 @@
       if (msg && msg.type === "RESCAN") {
         try {
           reportState();
-        } catch (_) {}
+          sendResponse({ success: true });
+        } catch (_) {
+          sendResponse({ success: false });
+        }
+        return true; // keep channel open for async response
       }
     } catch (_) {}
   });

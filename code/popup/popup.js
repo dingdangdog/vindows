@@ -6,20 +6,24 @@ async function getCurrentTab() {
 async function updateStatus() {
   const tab = await getCurrentTab();
   if (!tab) return;
+
+  // Try to send RESCAN to existing content script
+  // If it fails, just ignore - some pages can't have content scripts
   try {
     await new Promise((resolve) => {
       chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => {
-        // Check for runtime error and handle it gracefully
         if (chrome.runtime.lastError) {
+          // Content script not available - this is normal for some pages
           console.debug(
-            "Content script not available:",
+            "Content script not available (this is normal for system pages):",
             chrome.runtime.lastError.message
           );
         }
-        resolve();
+        resolve(); // Always resolve, never reject
       });
     });
   } catch (e) {
+    // Even if there's an error, don't throw - just log it
     console.debug("Failed to send RESCAN message:", e);
   }
 }
@@ -59,64 +63,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       btn.disabled = false;
       btn.textContent = chrome.i18n.getMessage("btnOpen");
       shortcutHint.style.display = "block";
-      refreshBtn.style.display = "none";
     } else {
       statusEl.textContent = chrome.i18n.getMessage("statusNoVideo");
       btn.disabled = true;
       btn.textContent = chrome.i18n.getMessage("btnNoVideo");
       shortcutHint.style.display = "none";
-      refreshBtn.style.display = "block";
     }
   }
 
   btn.addEventListener("click", async () => {
     const tab = await getCurrentTab();
     if (!tab) return;
-    try {
-      await new Promise((resolve, reject) => {
-        chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (response) => {
-          if (chrome.runtime.lastError) {
-            // Content script not available, try to inject it first
-            chrome.scripting
-              .executeScript({
-                target: { tabId: tab.id },
-                files: ["content/detect.js"],
-              })
-              .then(() => {
-                // Retry after injection
-                setTimeout(() => {
-                  chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, () => {
-                    if (chrome.runtime.lastError) {
-                      console.debug(
-                        "Retry DO_PIP failed:",
-                        chrome.runtime.lastError.message
-                      );
-                    }
-                    resolve();
-                  });
-                }, 100);
-              })
-              .catch(() => {
-                reject(new Error("Cannot inject content script"));
-              });
-          } else {
-            resolve();
-          }
-        });
-      });
-    } catch (e) {
-      // if content script not ready, try nudge with RESCAN
-      try {
-        await new Promise((resolve) => {
-          chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }, () => {
-            if (chrome.runtime.lastError) {
-              console.debug("RESCAN failed:", chrome.runtime.lastError.message);
-            }
-            resolve();
-          });
-        });
-      } catch (_) {}
-    }
+
+    // Simply try to send DO_PIP message
+    // If it fails, it means the page doesn't support content scripts - that's fine
+    chrome.tabs.sendMessage(tab.id, { type: "DO_PIP" }, (response) => {
+      if (chrome.runtime.lastError) {
+        // Content script not available - this is normal for some pages
+        console.debug(
+          "DO_PIP failed (normal for system pages):",
+          chrome.runtime.lastError.message
+        );
+      }
+      // Don't need to do anything else - either it worked or the page doesn't support it
+    });
   });
 
   // Add refresh button click handler
@@ -125,42 +95,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     refreshBtn.textContent =
       chrome.i18n.getMessage("statusScanning") || "Scanning...";
 
-    try {
-      await updateStatus();
+    // Try to trigger a rescan - if it fails, that's fine
+    await updateStatus();
 
-      // Get updated state after refresh
-      const tab = await getCurrentTab();
-      const state = await new Promise((resolve) => {
-        chrome.runtime.sendMessage(
-          { type: "GET_STATE_FOR_POPUP", tabId: tab && tab.id },
-          (resp) => {
-            // Check for runtime error
-            if (chrome.runtime.lastError) {
-              console.debug(
-                "Background script not available:",
-                chrome.runtime.lastError.message
-              );
-              resolve({ hasVideo: false, count: 0 });
-              return;
-            }
-            // Use the actual response from background script
-            resolve(resp || { hasVideo: false, count: 0 });
+    // Wait a moment for any potential detection to complete
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Get updated state after refresh attempt
+    const tab = await getCurrentTab();
+    const state = await new Promise((resolve) => {
+      chrome.runtime.sendMessage(
+        { type: "GET_STATE_FOR_POPUP", tabId: tab && tab.id },
+        (resp) => {
+          // Check for runtime error
+          if (chrome.runtime.lastError) {
+            console.debug(
+              "Background script not available:",
+              chrome.runtime.lastError.message
+            );
+            resolve({ hasVideo: false, count: 0 });
+            return;
           }
-        );
-      });
-      renderState(state);
-    } catch (e) {
-      console.warn("Refresh failed:", e);
-      // Fallback to no video state
-      renderState({ hasVideo: false, count: 0 });
-    } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.textContent =
-        chrome.i18n.getMessage("btnRefresh") || "Refresh";
-    }
+          // Use the actual response from background script
+          resolve(resp || { hasVideo: false, count: 0 });
+        }
+      );
+    });
+    renderState(state);
+
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = chrome.i18n.getMessage("btnRefresh") || "Refresh";
   });
 
-  await updateStatus();
+  // Don't auto-update on popup open, let user control refresh manually
+  // await updateStatus();
 
   // Query background for current state and render
   try {
